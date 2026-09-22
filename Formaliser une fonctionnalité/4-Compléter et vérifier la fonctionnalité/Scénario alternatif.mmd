@@ -1,0 +1,13 @@
+sequenceDiagram
+auteur ->>system: Accède à la création d'article
+system -->>auteur: Affiche le formulaire de rédaction
+auteur ->>system: Remplit le formulaire (Titre, Catégorie, Statut, Image, Contenu) et enregistre
+
+alt Contenu vide (Erreur)
+system -->>auteur:Refuse et affiche "Le contenu est obligatoire"
+ 
+else Statut Brouillon (Alternatif)
+system -->>auteur:Sauvegarde en inactif et redirige vers la liste
+else Cas nominal
+system -->>auteur:Sauvegarde l'article et redirige vers la liste
+end
