@@ -1,0 +1,5 @@
+sequenceDiagram
+auteur ->>system: Accède à la création d'article
+system -->>auteur: Affiche le formulaire de rédaction
+auteur ->>system: Remplit le formulaire (Titre, Catégorie, Statut, Image, Contenu) et enregistre
+system -->>auteur:Sauvegarde l'article et redirige vers la liste
