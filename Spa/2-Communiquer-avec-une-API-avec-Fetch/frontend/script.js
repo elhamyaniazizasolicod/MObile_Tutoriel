@@ -1,9 +1,10 @@
-  /* const API_URL = "http://localhost:8000/backend/api.php";
+const API_URL = "http://localhost:8000/backend/api.php";
         const form=document.querySelector("#form-object");
         inputNom=document.querySelector("#nom");
         inputCouleur=document.querySelector("#couleur");
         inputIcone=document.querySelector("#icone");   
         const tBody=document.querySelector("#table-categories-body");
+
         
         function chargerCategories(){
          
@@ -50,6 +51,9 @@
         })
         .catch(error => console.error("error :", error));
                 }
+
+
+
             document.addEventListener("DOMContentLoaded", () => { 
 
                 form.addEventListener("submit",(event)=>{
@@ -68,8 +72,15 @@
                             
                             form.reset();
                             chargerCategories();
+
+
                         })
+                      
+
+                  
                 })
+                
+                
                 chargerCategories(); 
             });
-/** */
+
