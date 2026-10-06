@@ -17,7 +17,12 @@ class Categories{
     public function getColeur():string{
         return $this->coleur;
     }
-    public function 
+    public function setColeur(string $coleur):void{
+        $this->coleur = $coleur;
+    }
+    public function afficher(){
+        echo $this->nom . "-" . $this->coleur;
+    }
    
 }
 ?>
