@@ -1,28 +1,28 @@
 <?php
-class Categories{ 
+class Categories{
     private string $nom;
-    private string $coleur;
+    private string $couleur;
 
-    public function __construct(string $nom ,string $coleur){
+    public function __construct(string $nom="",string $couleur=""){
         $this->nom=$nom;
-        $this->coleur=$coleur;
+        $this->couleur=$couleur;
     }
+
     public function getNom():string{
         return $this->nom;
     }
     public function setNom(string $nom):void{
         $this->nom=$nom;
+    }
+    public function getCouleur():string{
+       return $this->couleur;
+    }
+    public function setCouleur(string $couleur):void{
+        $this->couleur=$couleur;
+    }
 
-    }
-    public function getColeur():string{
-        return $this->coleur;
-    }
-    public function setColeur(string $coleur):void{
-        $this->coleur = $coleur;
-    }
     public function afficher(){
-        echo $this->nom . "-" . $this->coleur;
+        echo $this->nom . "-" . $this->couleur;
     }
-   
 }
 ?>

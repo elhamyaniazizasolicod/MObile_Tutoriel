@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des catégories</title>
+</head>
+
+<body>
+
+    <h1>Gestion des catégories</h1>
+
+
+    <!-- ========================= -->
+    <!-- FORMULAIRE -->
+    <!-- ========================= -->
+
+    <form id="form-categorie">
+
+        <label>Nom :</label>
+        <input
+            type="text"
+            id="cat-nom"
+            required
+        >
+
+        <br><br>
+
+        <label>Couleur :</label>
+        <input
+            type="text"
+            id="cat-couleur"
+            required
+        >
+
+        <br><br>
+
+        <label>Icône :</label>
+        <input
+            type="text"
+            id="cat-icone"
+            required
+        >
+
+        <br><br>
+
+        <button type="submit">
+            Ajouter
+        </button>
+
+    </form>
+
+
+    <h2>Liste des catégories</h2>
+
+
+    <!-- ========================= -->
+    <!-- TABLEAU -->
+    <!-- ========================= -->
+
+    <table border="1">
+
+        <thead>
+
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Couleur</th>
+                <th>Icône</th>
+            </tr>
+
+        </thead>
+
+        <tbody id="table-categories-body">
+
+        </tbody>
+
+    </table>
+
+
+    <script src="main.js"></script>
+
+</body>
+
+</html>

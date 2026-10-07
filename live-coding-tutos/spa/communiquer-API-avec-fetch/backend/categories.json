@@ -1,0 +1,32 @@
+[
+    {
+        "id": 1,
+        "nom": "php",
+        "couleur": "gray",
+        "icone": "\ud83d\udda5\ufe0f"
+    },
+    {
+        "id": 2,
+        "nom": "aziza",
+        "couleur": "bleu",
+        "icone": "\ud83d\ude89"
+    },
+    {
+        "id": 3,
+        "nom": "php",
+        "couleur": "bleu",
+        "icone": "\ud83d\ude89"
+    },
+    {
+        "id": 4,
+        "nom": "php",
+        "couleur": "gray",
+        "icone": "\u2764\ufe0f\u2764\ufe0f"
+    },
+    {
+        "id": 5,
+        "nom": "php",
+        "couleur": "bleu",
+        "icone": "\ud83d\udda5\ufe0f"
+    }
+]

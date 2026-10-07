@@ -1,10 +1,10 @@
 <?php
 require_once 'categories.php';
 
-$data = new Categories("php","red");
+$data=new Categories("php","bleu");
 
 $data->setNom("php");
-$data->setColeur("bleu");
+$data->setCouleur("bleu");
 
 $data->afficher();
 ?>
