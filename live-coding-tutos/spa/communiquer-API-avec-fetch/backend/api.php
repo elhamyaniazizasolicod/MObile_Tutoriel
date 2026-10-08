@@ -3,57 +3,71 @@
 header("Content-Type: application/json");
 
 $file = "categories.json";
+// Vérifier si le fichier existe
+if (!file_exists($file)) {
+    file_put_contents($file, json_encode([]));
+}
 
-if ($_SERVER["REQUEST_METHOD"] === "GET") {
+// Lire les données
+function lireCategories()
+{
+    global $file;
 
-    $categories = json_decode(
-        file_get_contents($file),
-        true
+    $contenu = file_get_contents($file);
+
+    return json_decode($contenu, true) ?? [];
+}
+
+// Sauvegarder les données
+function sauvegarderCategories($categories){
+    global $file;
+
+    file_put_contents(
+        $file,
+        json_encode(
+            $categories,
+            JSON_PRETTY_PRINT
+        )
     );
+}
+
+$method = $_SERVER["REQUEST_METHOD"];
+
+if ($method === "GET") {
+
+    $categories = lireCategories();
 
     echo json_encode([
         "success" => true,
         "data" => $categories
     ]);
 
-    exit;
 }
 
+elseif ($method === "POST") {
 
-// ===============================
-// POST : ajouter une catégorie
-// ===============================
+    $categories = lireCategories();
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
-    // Lire les données envoyées par JavaScript
     $data = json_decode(
         file_get_contents("php://input"),
         true
     );
 
-    // Lire les anciennes catégories
-    $categories = json_decode(
-        file_get_contents($file),
-        true
-    );
-
-    // Créer la nouvelle catégorie
     $nouvelleCategorie = [
-        "id" => count($categories)+ 1,
+
+        "id" => count($categories) + 1,
+
         "nom" => $data["nom"],
+
         "couleur" => $data["couleur"],
+
         "icone" => $data["icone"]
+
     ];
 
-    // Ajouter dans le tableau
     $categories[] = $nouvelleCategorie;
 
-    // Enregistrer dans JSON
-    file_put_contents(
-        $file,
-        json_encode($categories, JSON_PRETTY_PRINT)
-    );
+    sauvegarderCategories($categories);
 
     echo json_encode([
         "success" => true,
@@ -61,5 +75,92 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         "data" => $nouvelleCategorie
     ]);
 
-    exit;
+}
+
+elseif ($method === "PUT") {
+
+    $categories = lireCategories();
+
+    $data = json_decode(
+        file_get_contents("php://input"),
+        true
+    );
+
+    $id = $data["id"];
+
+    $trouve = false;
+
+    foreach ($categories as &$categorie) {
+
+        if ($categorie["id"] == $id) {
+
+            $categorie["nom"] = $data["nom"];
+
+            $categorie["couleur"] = $data["couleur"];
+
+            $categorie["icone"] = $data["icone"];
+
+            $trouve = true;
+
+            break;
+        }
+    }
+
+    if ($trouve) {
+
+        sauvegarderCategories($categories);
+
+        echo json_encode([
+            "success" => true,
+            "message" => "Catégorie modifiée"
+        ]);
+
+    } else {
+
+        echo json_encode([
+            "success" => false,
+            "message" => "Catégorie introuvable"
+        ]);
+    }
+
+}
+
+elseif ($method === "DELETE") {
+
+    $categories = lireCategories();
+
+    $data = json_decode(
+        file_get_contents("php://input"),
+        true
+    );
+
+    $id = $data["id"];
+
+    $nouvellesCategories = [];
+
+    foreach ($categories as $categorie) {
+
+        if ($categorie["id"] != $id) {
+
+            $nouvellesCategories[] = $categorie;
+        }
+    }
+
+    sauvegarderCategories($nouvellesCategories);
+
+    echo json_encode([
+        "success" => true,
+        "message" => "Catégorie supprimée"
+    ]);
+
+}
+
+
+else {
+
+    echo json_encode([
+        "success" => false,
+        "message" => "Méthode HTTP non autorisée"
+    ]);
+
 }

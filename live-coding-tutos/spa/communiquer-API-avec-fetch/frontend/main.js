@@ -1,148 +1,175 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    // URL de l'API
     const API_URL = "http://localhost:8000/backend/api.php";
+    const tableBody = document.querySelector("#table-categories-body");
+    const formCategorie =document.querySelector("#form-categorie");
+    const nomInput = document.querySelector("#cat-nom");
+    const couleurInput = document.querySelector("#cat-couleur");
+    const iconeInput = document.querySelector("#cat-icone");
 
+    const sectionForm = document.querySelector("#section-form");
+    const btnShowForm = document.querySelector("#btn-show-form");
+    const btnCancel = document.querySelector("#btn-cancel");
+    let ligneEnEdition = null;
 
-    // Récupérer les éléments HTML
-    const formCategorie =
-        document.querySelector("#form-categorie");
-
-    const nomInput =
-        document.querySelector("#cat-nom");
-
-    const couleurInput =
-        document.querySelector("#cat-couleur");
-
-    const iconeInput =
-        document.querySelector("#cat-icone");
-
-    const tableBody =
-        document.querySelector("#table-categories-body");
-
-
-    // ========================================
-    // AFFICHER LES CATÉGORIES
-    // GET
-    // ========================================
-
-    function chargerCategories() {
-
+    function chargerCategories(){
         fetch(API_URL)
+        .then(Response=>Response.json())
+        .then(result =>{
+            tableBody.innerHTML="";
+            result.data.forEach(categorie => {
+             
+                const ligne = document.createElement("tr");
+                ligne.innerHTML = `
+                <td>${categorie.id}</td>
+                <td>${categorie.nom}</td>
+                <td>${categorie.couleur}</td>
+                <td>${categorie.icone}</td>
+                <td>
+                   <button class="btn-modifier">Modifier</button>
+                   <button class="btn-supprimer">Supprimer</button>
+                </td>
+                `;
+                tableBody.appendChild(ligne);
 
-            .then(response => response.json())
+                const btnSupprimer = 
+                 ligne.querySelector(".btn-supprimer");
+                 btnSupprimer.addEventListener("click",()=>{
+                    const id=categorie.id;
+                    fetch(API_URL,{
+                        method:"DELETE",
+                        headers: { "Content-Type": "application/json" } ,
+                        body: JSON.stringify({
+                            id: id
+                        })
 
-            .then(result => {
+                    })
+                    .then(Response=>Response.json())
+                    .then(result=>{
+                        console.log(result);
+                        chargerCategories();
+                    })
+                    .catch(error=>{
+                        console.error( "Erreur suppression :",error);
+                    });
+                 });
+                 const btnModifier=
+                 ligne.querySelector(".btn-modifier");
+                 btnModifier.addEventListener("click",()=>{
+                    ligneEnEdition=categorie.id;
 
-                // Vider le tableau
-                tableBody.innerHTML = "";
+                    nomInput=categorie.nom;
+                    couleurInput=categorie.couleur;
+                    iconeInput=categorie.icone;
 
-
-                // Parcourir les catégories
-                result.data.forEach(categorie => {
-
-                    const ligne = `
-                        <tr>
-                            <td>${categorie.id}</td>
-                            <td>${categorie.nom}</td>
-                            <td>${categorie.couleur}</td>
-                            <td>${categorie.icone}</td>
-                        </tr>
-                    `;
-
-
-                    // Ajouter la ligne
-                    tableBody.insertAdjacentHTML(
-                        "beforeend",
-                        ligne
-                    );
-
-                });
-
-            })
-
-            .catch(error => {
-
-                console.error(
-                    "Erreur :",
-                    error
-                );
-
+                    sectionForm.hidden=false;
+                    btnShowForm.hidden=true;
+                 });
             });
+        })
+        .catch(error =>{
+            console.error("Erreur lors du chargement :",error);
+        });
     }
+    btnShowForm.addEventListener("click",()=>{
+        sectionForm.hidden=false;
+        btnShowForm.hidden=true;
+    });
+
+    btnCancel.addEventListener("click",()=>{
+        sectionForm.hidden=true;
+        btnShowForm.hidden=false;
+        formCategorie.reset();
+        ligneEnEdition=null;
+    });
+     formCategorie.addEventListener("submit", (event) => {
+
+        // Empêcher le rechargement de la page
+        event.preventDefault();
 
 
-    // ========================================
-    // AJOUTER UNE CATÉGORIE
-    // POST
-    // ========================================
+        // Construire l'objet
+        const categorie = {
 
-    formCategorie.addEventListener(
-        "submit",
-        (event) => {
+            nom: nomInput.value,
 
-            // Empêcher le rechargement
-            event.preventDefault();
+            couleur: couleurInput.value,
 
+            icone: iconeInput.value
 
-            // Créer l'objet
-            const categorie = {
-
-                nom: nomInput.value,
-
-                couleur: couleurInput.value,
-
-                icone: iconeInput.value
-
-            };
+        };
+        let method = "POST";
 
 
-            // Envoyer au backend
-            fetch(API_URL, {
+        // Si une catégorie est en édition
+        if (ligneEnEdition !== null) {
 
-                method: "POST",
+            // Ajouter l'id
+            categorie.id = ligneEnEdition;
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify(categorie)
-
-            })
-
-            .then(response => response.json())
-
-            .then(result => {
-
-                console.log(result);
-
-
-                // Vider le formulaire
-                formCategorie.reset();
-
-
-                // Actualiser le tableau
-                chargerCategories();
-
-            })
-
-            .catch(error => {
-
-                console.error(
-                    "Erreur :",
-                    error
-                );
-
-            });
+            // Utiliser PUT
+            method = "PUT";
 
         }
-    );
 
 
-    // ========================================
-    // CHARGEMENT INITIAL
-    // ========================================
+        // Envoyer vers l'API
+        fetch(API_URL, {
+
+            method: method,
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(categorie)
+
+        })
+
+        .then(response => response.json())
+
+        .then(result => {
+
+            console.log(result);
+
+
+            // Fermer le formulaire
+            sectionForm.hidden = true;
+
+            btnShowForm.hidden = false;
+
+
+            // Réinitialiser le formulaire
+            formCategorie.reset();
+
+
+            // Sortir du mode édition
+            ligneEnEdition = null;
+
+
+            // Actualiser le tableau
+            chargerCategories();
+
+        })
+
+        .catch(error => {
+
+            console.error(
+                "Erreur lors de l'enregistrement :",
+                error
+            );
+
+        });
+
+    });
+
+
+    // =====================================================
+    // CHARGEMENT AU DÉMARRAGE
+    // =====================================================
 
     chargerCategories();
+
+    
 
 });
