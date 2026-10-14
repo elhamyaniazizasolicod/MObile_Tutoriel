@@ -10,6 +10,6 @@ $personnes = [$user, $auteur];
 
 // Tester le polymorphisme
 foreach ($personnes as $personne) {
-    echo $personne->getRoleName() . "<br>";
+    echo $personne->getRoleName() . "<br>"."<br>";
 }
 ?>
