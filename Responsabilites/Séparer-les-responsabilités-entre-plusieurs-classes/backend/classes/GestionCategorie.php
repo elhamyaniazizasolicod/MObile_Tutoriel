@@ -1,75 +1,80 @@
 <?php
-    require_once "Categorie.php";
-    class GestionCategorie{
-private static string $dataFile =
-        __DIR__ . '/../data/categorie.json';
-        public function getAll():array{
-            $categories = [];
-            if(file_exists(self::$dataFile)){
-                $jsonData = file_get_contents(self::$dataFile);
-                $categoriesData = json_decode($jsonData, true);
-                foreach($categoriesData as $categorieData){
-                    $categorie = new Categorie($categorieData['id'], $categorieData['nom'] , $categorieData['couleur'], $categorieData['icone']);
-                    $categories[] = $categorie;
-                }
-            }
-            return $categories;
-        }
-        
-        public function createCategorie($nom, $couleur, $icone):Categorie{
-            $categories = $this->getAll();
-            $id = count($categories) + 1;
-            $categorie = new Categorie($id, $nom, $couleur, $icone);
-            $categories[] = $categorie;
-            file_put_contents(self::$dataFile, json_encode(array_map(function($categorie){
-                return [
-                    'id' => $categorie->getId(),
-                    'nom' => $categorie->getNom(),
-                    'couleur' => $categorie->getCouleur(),
-                    'icone' => $categorie->getIcone()
-                ];
-            }, $categories)));
-            return $categorie;
-        }
+require 'Categorie.php';
 
-        public function updateCategorie($id, $nom, $couleur, $icone):bool{
-            $categories = $this->getAll();
-            foreach($categories as $categorie){
-                if($categorie->getId() == $id){
-                    $categorie->setNom($nom);
-                    $categorie->setCouleur($couleur);
-                    $categorie->setIcone($icone);
-                    file_put_contents(self::$dataFile, json_encode(array_map(function($categorie){
-                        return [
-                            'id' => $categorie->getId(),
-                            'nom' => $categorie->getNom(),
-                            'couleur' => $categorie->getCouleur(),
-                            'icone' => $categorie->getIcone()
-                        ];
-                    }, $categories)));
-                    return true;
-                }
-            }
-            return false;
-        }
+class GestionCategorie{
+    private static $datafile = __DIR__ . '/../data/categories.json';
 
-        public function deleteCategorie($id):bool{
-            $categories = $this->getAll();
-            foreach($categories as $index => $categorie){
-                if($categorie->getId() == $id){
-                    unset($categories[$index]);
-                    file_put_contents(self::$dataFile, json_encode(array_map(function($categorie){
-                        return [
-                            'id' => $categorie->getId(),
-                            'nom' => $categorie->getNom(),
-                            'couleur' => $categorie->getCouleur(),
-                            'icone' => $categorie->getIcone()
-                        ];
-                    }, $categories)));
-                    return true;
-                }
+    public function getAll(): array{
+        if(!file_exists(self::$datafile)){
+            return [];
+        }
+        $json = file_get_contents(self::$datafile);
+        $data = json_decode($json,true);
+
+        $categories = [];
+
+        foreach($data as $cat){
+            $categories[] = new Categorie(
+                $cat['id'],
+                $cat['nom'], 
+                $cat['couleur'], 
+                $cat['icone']
+            );
+        }
+        return $categories;
+    }
+    public function CreateCategory(Categorie $categorie){
+        $file = file_get_contents(self::$datafile);
+        $data = json_decode($file,true);
+        $data[] = [
+            'id' => $categorie->getId(),
+            'nom' => $categorie->getNom(),
+            'couleur' => $categorie->getCouleur(),
+            'icone' => $categorie->getIcone()
+        ];
+        $newdata = json_encode($data);
+        return file_put_contents(self::$datafile,$newdata);
+    }
+    public function UpdateCategory(Categorie $categorie){
+        $file = file_get_contents(self::$datafile);
+        $data = json_decode($file,true);
+        foreach($data as $id =>$cat){
+            if ($cat['id'] == $categorie->getId()){
+                $data[$id]['nom'] = $categorie->getNom();
+                $data[$id]['couleur'] = $categorie->getCouleur();
+                $data[$id]['icone'] = $categorie->getIcone();
+
+                $newdata = json_encode($data);
+                return file_put_contents(self::$datafile,$newdata);
             }
-            return false;
+            
         }
     }
+    public function DeleteCategory(Categorie $categorie){
+        $file = file_get_contents(self::$datafile);
+        $data = json_decode($file,true);
+        foreach($data as $id=>$cat){
+            if($cat['id'] == $categorie->getId()){
+                unset($data[$id]);
+                $data = array_values($data);
+                $newdata = json_encode($data);
+                return file_put_contents(self::$datafile,$newdata);
+            }
+        }
+    }
+}
+$gestion = new GestionCategorie();
+
+$categorie = new Categorie(4,"Programming","#3498db","code");
+
+$result = $gestion->CreateCategory($categorie);
+echo $result ? "Category added!" : "Failed to add category.";
+$affichage = $gestion->getAll();
+
+foreach ($affichage as $cat) {
+    echo $cat->getId() . " - ";
+    echo $cat->getNom() . "<br>";
+}
+$delete = $gestion->DeleteCategory($categorie);
+echo $delete ? "Category deleted!" : "Category not found or deletion failed.";
 ?>
