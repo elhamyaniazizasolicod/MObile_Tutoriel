@@ -1,6 +1,6 @@
+const API_URL='http://localhost:8000/controllers/CategorieController.php';
 const Button = document.getElementById('button');
 const Form = document.getElementById('form');
-
 function setLoadingState(isLoading) {
     
     if (isLoading) {
@@ -12,14 +12,12 @@ function setLoadingState(isLoading) {
     }
 }
 
-form.addEventListener('submit', function(event) {
+Form.addEventListener('submit', function(event) {
     event.preventDefault();
     setLoadingState(true);
-    fetch('http://localhost:8000/controllers/CategorieController.php', {
+    fetch(API_URL, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
             nom: document.getElementById('nom').value,
             couleur: document.getElementById('couleur').value,
@@ -28,7 +26,9 @@ form.addEventListener('submit', function(event) {
     })
     .then(response => response.json())
     .then(data => {
-        console.log('Success:', data);
+        console.log('Success:', data); 
+        Form.reset();
+   
     })
     .catch(error => {
         setLoadingState(false);
